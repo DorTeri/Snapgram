@@ -1,14 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, NavLink, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Button } from '../ui/button'
 import { useSignOutAccount } from '@/lib/react-query/queriesAndMutations'
 import { useUserContext } from '@/context/AuthContext'
+import { INavLink } from '@/types'
+import { sidebarLinks } from '@/constants'
 
 const LeftSidebar = () => {
 
     const { mutate: signOut, isSuccess } = useSignOutAccount();
     const navigate = useNavigate()
     const { user } = useUserContext();
+    const { pathname } = useLocation()
 
 
     return (
@@ -40,9 +43,36 @@ const LeftSidebar = () => {
                 </Link>
 
                 <ul className='flex flex-col gap-6'>
-                    
+                    {sidebarLinks.map((link: INavLink) => {
+
+                        const isActive = pathname === link.route
+
+                        return (
+                            <li key={link.label} className={`leftsidebar-link ${isActive && 'bg-primary-500'} group`}>
+                                <NavLink
+                                    to={link.route}
+                                    className='flex gap-4 items-center p-4'>
+                                    <img
+                                        src={link.imgURL}
+                                        alt={link.label}
+                                        className={`group-hover:invert-white ${isActive && 'invert-white'}`}
+                                    />
+                                    {link.label}
+                                </NavLink>
+                            </li>
+
+                        )
+                    })}
                 </ul>
             </div>
+
+            <Button
+                variant="ghost"
+                className='shad-button_ghost'
+                onClick={() => signOut}>
+                <img src='/assets/icons/logout.svg' alt='logout' />
+                <p className='small-medium lg:base-medium'>Logout</p>
+            </Button>
         </nav>
     )
 }
