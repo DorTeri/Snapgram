@@ -190,7 +190,65 @@ export async function getRecentPosts() {
         [Query.orderDesc('$createdAt'), Query.limit(20)]
     )
 
-    if(!posts) throw Error;
+    if (!posts) throw Error;
 
     return posts
+}
+
+export async function likePost(postId: string, likesArray: string[]) {
+    try {
+        const updatedPost = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            postId,
+            {
+                likes: likesArray
+            }
+        )
+
+        if (!updatedPost) throw Error
+
+        return updatedPost
+
+    } catch (error) {
+        console.log('likePost error', error)
+    }
+}
+
+export async function savePost(postId: string, userid: string) {
+    try {
+        const updatedPost = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.savesCollectionId,
+            ID.unique(),
+            {
+                user: userid,
+                post: postId,
+            }
+        )
+
+        if (!updatedPost) throw Error
+
+        return updatedPost
+
+    } catch (error) {
+        console.log('likePost error', error)
+    }
+}
+
+export async function deleteSavedPost(savedRecordId: string) {
+    try {
+        const statusCode = await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.savesCollectionId,
+            savedRecordId,
+        )
+
+        if (!statusCode) throw Error
+
+        return { status: 'ok' }
+
+    } catch (error) {
+        console.log('likePost error', error)
+    }
 }
