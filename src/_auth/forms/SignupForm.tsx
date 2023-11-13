@@ -8,12 +8,15 @@ import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation"
 import { z } from "zod"
 import { Loader } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
+import { useUserContext } from "@/context/AuthContext"
 
 
 const SignupForm = () => {
   const { toast } = useToast()
+  const {checkAuthUser , isLoading: isUserLoading} = useUserContext()
+  const navigate = useNavigate()
 
   const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccount();
 
@@ -46,7 +49,15 @@ const SignupForm = () => {
       return toast({ title: 'Sign in failed. Please try again.' })
     }
 
-    
+    const isLoggedIn = await checkAuthUser()
+
+    if(isLoggedIn) {
+      form.reset();
+
+      navigate('/')
+    } else {
+      toast({title: 'Sign in failed. Please try again.'})
+    }
   }
 
 
