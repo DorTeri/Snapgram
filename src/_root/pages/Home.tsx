@@ -9,7 +9,7 @@ const Home = () => {
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts()
   const { data: creators, isPending: isUserLoading, isError: isErrorCreators } = useGetUsers(10);
 
-  if (isErrorPosts) {
+  if (isErrorPosts || isErrorCreators) {
     return (
       <div className="flex flex-1">
         <div className="home-container">
