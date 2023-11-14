@@ -11,7 +11,7 @@ const Topbar = () => {
     const { user } = useUserContext();
 
     useEffect(() => {
-        if (isSuccess) navigate(0)
+        if (isSuccess) navigate('/sign-in')
     }, [isSuccess])
 
 
@@ -29,7 +29,7 @@ const Topbar = () => {
 
                 <div className='flex gap-4'>
                     <Button variant="ghost" className='shad-button_ghost'
-                        onClick={() => signOut}>
+                        onClick={() => signOut()}>
                         <img src='/assets/icons/logout.svg' alt='logout' />
                     </Button>
                     <Link to={`/profle/${user.id}`} className='flex-center gap-3'>
