@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from 
 import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation"
 import { z } from "zod"
-import { Loader } from "lucide-react"
+import Loader from "@/components/shared/Loader";
 import { Link, useNavigate } from "react-router-dom"
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
 import { useUserContext } from "@/context/AuthContext"

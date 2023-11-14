@@ -4,7 +4,7 @@ import { useSignOutAccount } from '@/lib/react-query/queriesAndMutations'
 import { INITIAL_USER, useUserContext } from '@/context/AuthContext'
 import { INavLink } from '@/types'
 import { sidebarLinks } from '@/constants'
-import { Loader } from 'lucide-react'
+import Loader from "@/components/shared/Loader";
 
 const LeftSidebar = () => {
 

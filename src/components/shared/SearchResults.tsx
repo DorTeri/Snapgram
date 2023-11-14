@@ -1,4 +1,4 @@
-import { Loader } from "lucide-react";
+import Loader from "@/components/shared/Loader";
 import GridPostList from "./GridPostList";
 
 type SearchResultsProps = {
