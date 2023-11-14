@@ -15,7 +15,7 @@ const Explore = () => {
   const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue)
 
 
-  if(!posts) {
+  if (!posts) {
     return (
       <div className="flex-center w-full h-full">
         <Loader />
@@ -65,12 +65,13 @@ const Explore = () => {
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">
         {shouldShowSearchResults ? (
           <SearchResults
-
+            isSearchFetching={isSearchFetching}
+            searchedPosts={searchedPosts}
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full">End of posts</p>
         ) : posts.pages.map((item, index) => (
-          <GridPostList key={`page-${index}`} posts={item.documents}/>
+          <GridPostList key={`page-${index}`} posts={item.documents} />
         ))}
       </div>
     </div>
