@@ -7,6 +7,7 @@ import {
 import { createPost, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
+import { useUserContext } from '@/context/AuthContext'
 
 export const useCreateUserAccount = () => {
     return useMutation({
@@ -44,11 +45,11 @@ export const useCreatePost = () => {
 
 export const useGetRecentPosts = (userId: string) => {
     return useQuery({
-      queryKey: [QUERY_KEYS.GET_RECENT_POSTS, userId],
-      queryFn: () => getRecentPosts(userId),
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS, userId],
+        queryFn: () => getRecentPosts(userId),
     });
-  };
-  
+};
+
 
 export const useLikePost = () => {
     const queryClient = useQueryClient()
@@ -210,16 +211,26 @@ export const useUpdateUser = () => {
 
 export const useFollowUser = () => {
     const queryClient = useQueryClient();
+    const { setUser } = useUserContext()
     return useMutation({
         mutationFn: ({ userId, targetUserId }: { userId: string, targetUserId: string }) =>
             followUser(userId, targetUserId),
         onSuccess: (data) => {
-            // Assuming data contains information about the updated users (similar to your followUser function)
+            setUser({
+                id: data.user.$id,
+                name: data.user.name,
+                username: data.user.username,
+                email: data.user.email,
+                imageUrl: data.user.imageUrl,
+                bio: data.user.bio,
+                following: data.user.following,
+                followers: data.user.followers
+            })
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id], // Replace with the actual key structure
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id],
             });
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id], // Replace with the actual key structure
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id],
             });
         },
     });
@@ -227,16 +238,26 @@ export const useFollowUser = () => {
 
 export const useUnfollowUser = () => {
     const queryClient = useQueryClient();
+    const { setUser } = useUserContext()
     return useMutation({
         mutationFn: ({ userId, targetUserId }: { userId: string, targetUserId: string }) =>
             unfollowUser(userId, targetUserId),
         onSuccess: (data) => {
-            // Assuming data contains information about the updated users (similar to your unfollowUser function)
+            setUser({
+                id: data.user.$id,
+                name: data.user.name,
+                username: data.user.username,
+                email: data.user.email,
+                imageUrl: data.user.imageUrl,
+                bio: data.user.bio,
+                following: data.user.following,
+                followers: data.user.followers
+            })
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id], // Replace with the actual key structure
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id],
             });
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id], // Replace with the actual key structure
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id],
             });
         },
     });

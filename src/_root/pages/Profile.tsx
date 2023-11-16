@@ -2,7 +2,7 @@ import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/context/AuthContext";
-import { useGetUserById } from "@/lib/react-query/queriesAndMutations";
+import { useFollowUser, useGetUserById, useUnfollowUser } from "@/lib/react-query/queriesAndMutations";
 import {
   Route,
   Routes,
@@ -12,6 +12,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { LikedPosts } from ".";
+import { useEffect, useState } from "react";
 
 interface StabBlockProps {
   value: string | number;
@@ -26,11 +27,23 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
 );
 
 const Profile = () => {
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const { id } = useParams();
   const { user } = useUserContext();
   const { pathname } = useLocation();
+  const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
+  const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
+
 
   const { data: currentUser } = useGetUserById(id || "");
+
+  useEffect(() => {
+    // Check if the user is in the list of followed users
+    if (user && currentUser) {
+      setIsFollowing(user?.following?.includes(currentUser?.$id) ?? false);
+    }
+  }, []);
+
 
   if (!currentUser)
     return (
@@ -38,6 +51,22 @@ const Profile = () => {
         <Loader />
       </div>
     );
+
+
+
+  const handleFollow = async () => {
+
+    if (!isFollowing) {
+      const data = await followUser({ userId: user.id, targetUserId: currentUser.$id })
+      console.log('follow', data);
+
+    } else {
+      const data = await unFollowUser({ userId: user.id, targetUserId: currentUser.$id })
+      console.log('unfollow', data);
+    }
+
+    setIsFollowing(!isFollowing);
+  }
 
   return (
     <div className="profile-container">
@@ -75,9 +104,8 @@ const Profile = () => {
             <div className={`${user.id !== currentUser.$id && "hidden"}`}>
               <Link
                 to={`/update-profile/${currentUser.$id}`}
-                className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-lg ${
-                  user.id !== currentUser.$id && "hidden"
-                }`}>
+                className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-lg ${user.id !== currentUser.$id && "hidden"
+                  }`}>
                 <img
                   src={"/assets/icons/edit.svg"}
                   alt="edit"
@@ -90,8 +118,11 @@ const Profile = () => {
               </Link>
             </div>
             <div className={`${user.id === id && "hidden"}`}>
-              <Button type="button" className="shad-button_primary px-8">
-                Follow
+              <Button type="button"
+                className="shad-button_primary px-8"
+                disabled={isLoadingFollow || isLoadingUnfollow}
+                onClick={() => handleFollow()}>
+                {isFollowing ? 'Unfollow' : 'Follow'}
               </Button>
             </div>
           </div>
@@ -102,9 +133,8 @@ const Profile = () => {
         <div className="flex max-w-5xl w-full">
           <Link
             to={`/profile/${id}`}
-            className={`profile-tab rounded-l-lg ${
-              pathname === `/profile/${id}` && "!bg-dark-3"
-            }`}>
+            className={`profile-tab rounded-l-lg ${pathname === `/profile/${id}` && "!bg-dark-3"
+              }`}>
             <img
               src={"/assets/icons/posts.svg"}
               alt="posts"
@@ -115,9 +145,8 @@ const Profile = () => {
           </Link>
           <Link
             to={`/profile/${id}/liked-posts`}
-            className={`profile-tab rounded-r-lg ${
-              pathname === `/profile/${id}/liked-posts` && "!bg-dark-3"
-            }`}>
+            className={`profile-tab rounded-r-lg ${pathname === `/profile/${id}/liked-posts` && "!bg-dark-3"
+              }`}>
             <img
               src={"/assets/icons/like.svg"}
               alt="like"

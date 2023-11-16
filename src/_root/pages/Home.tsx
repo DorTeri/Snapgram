@@ -5,6 +5,7 @@ import { Models } from 'appwrite'
 import Loader from "@/components/shared/Loader";
 import { useUserContext } from '@/context/AuthContext';
 
+
 const Home = () => {
 
   const { data: creators, isPending: isUserLoading, isError: isErrorCreators } = useGetUsers(10);
@@ -12,6 +13,7 @@ const Home = () => {
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts(user.id)
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
+  
 
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
 
