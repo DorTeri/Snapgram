@@ -197,7 +197,7 @@ export async function getRecentPosts(userId: string) {
     if (!currentUser || !currentUser.following) throw Error;
 
     const followingUsers = currentUser.following;
-
+    followingUsers.push(currentUser.$id)
 
     // Use type assertion to inform TypeScript that Query.in is available
     const posts = await databases.listDocuments(
