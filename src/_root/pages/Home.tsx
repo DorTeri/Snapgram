@@ -33,7 +33,7 @@ const Home = () => {
     return (
       <div className="flex flex-1">
         <div className="home-container">
-          <p className="body-medium text-light-1">Something bad happened</p>
+          <p className="body-medium text-light-1">{user.following.length === 0 ? 'You are not following anyone yet' : 'No posts yet'}.</p>
         </div>
         <div className="home-creators">
           <p className="body-medium text-light-1">Something bad happened</p>
@@ -46,7 +46,7 @@ const Home = () => {
     <div className='flex flex-1'>
       <div className='home-container'>
 
-        <div className="flex p-4 min-h-[100px] max-w-[300px] lg:max-w-[650px] sm:max-w-[400px] xs:max-w-[400px] xxs:max-w-[250px] mx-auto overflow-x-auto relative custom-scrollbar">
+        <div className="flex p-4 min-h-[100px] max-w-[300px] lg:max-w-[650px] sm:max-w-[400px] xs:max-w-[400px] xxs:max-w-[290px] mx-auto overflow-x-auto relative custom-scrollbar">
           <StorieCard />
           <StorieCard />
           <StorieCard />
