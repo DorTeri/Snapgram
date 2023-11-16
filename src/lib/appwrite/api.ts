@@ -67,6 +67,7 @@ export async function signInAccount(user: { email: string; password: string; }) 
 export async function getCurrentUser() {
     try {
         const currentAccount = await account.get();
+        
 
         if (!currentAccount) throw Error;
 
@@ -75,6 +76,7 @@ export async function getCurrentUser() {
             appwriteConfig.userCollectionId,
             [Query.equal('accountId', currentAccount.$id)]
         )
+
 
         if (!currentUser) throw Error;
 

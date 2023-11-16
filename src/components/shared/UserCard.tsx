@@ -2,25 +2,37 @@ import { Models } from "appwrite";
 import { Link } from "react-router-dom";
 
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
 
 type UserCardProps = {
   user: Models.Document;
   currentUser?: any,
   handleFollow?: any,
-  isLoadingFollow?: any
+  isLoadingFollow?: any,
+  isLoadingUnfollow?: any
 };
 
 
-const UserCard = ({ user, currentUser, handleFollow , isLoadingFollow }: UserCardProps) => {
+const UserCard = ({ user, currentUser, handleFollow, isLoadingFollow, isLoadingUnfollow }: UserCardProps) => {
 
-  console.log('currentUser',currentUser);
-  
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
-  const handleFollowClick = (e: React.MouseEvent) => {    
+  useEffect(() => {
+    // Check if the user is in the list of followed users
+    setIsFollowing(currentUser?.following?.includes(user.$id) ?? false);
+  }, [currentUser?.following, user.$id]);
+
+  const handleFollowClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
 
-    handleFollow(user.$id , currentUser)
+    if (isFollowing) {
+      await handleFollow(user.$id, currentUser, 'unfollow')
+    } else {
+      await handleFollow(user.$id, currentUser, 'follow')
+    }
+
+    setIsFollowing(!isFollowing);
   }
 
   return (
@@ -41,10 +53,10 @@ const UserCard = ({ user, currentUser, handleFollow , isLoadingFollow }: UserCar
       </div>
 
       <Button type="button"
-        disabled={isLoadingFollow}
+        disabled={isLoadingFollow || isLoadingUnfollow}
         size="sm" className="shad-button_primary px-5"
         onClick={(e) => handleFollowClick(e)}>
-        Follow
+        {isFollowing ? 'Unfollow' : 'Follow'}
       </Button>
     </Link>
   );
