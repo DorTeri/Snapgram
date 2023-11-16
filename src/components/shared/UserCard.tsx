@@ -5,13 +5,16 @@ import { Button } from "../ui/button";
 
 type UserCardProps = {
   user: Models.Document;
-  currentUser: any,
-  handleFollow: any,
-  isLoadingFollow: any
+  currentUser?: any,
+  handleFollow?: any,
+  isLoadingFollow?: any
 };
 
 
 const UserCard = ({ user, currentUser, handleFollow , isLoadingFollow }: UserCardProps) => {
+
+  console.log('currentUser',currentUser);
+  
 
   const handleFollowClick = (e: React.MouseEvent) => {    
     e.stopPropagation()
