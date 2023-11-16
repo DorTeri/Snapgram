@@ -71,22 +71,14 @@ const Home = () => {
           <h2 className='h3-bold md:h2-bold text-left w-full'>
             Home Feed
           </h2>
-          {user.following.length === 0 ? (
-            <h2 className='h3-bold md:h2-bold text-left w-full'>
-              You are not following anyone yet.
-            </h2>
+          {isPostLoading && !posts ? (
+            <Loader />
           ) : (
-            <>
-              {isPostLoading && !posts ? (
-                <Loader />
-              ) : (
-                <ul className='flex flex-col flex-1 gap-9 w-full'>
-                  {posts?.documents.map((post: Models.Document) => (
-                    <PostCard post={post} key={post.$id} />
-                  ))}
-                </ul>
-              )}
-            </>
+            <ul className='flex flex-col flex-1 gap-9 w-full'>
+              {posts?.documents.map((post: Models.Document) => (
+                <PostCard post={post} key={post.$id} />
+              ))}
+            </ul>
           )}
         </div>
 
