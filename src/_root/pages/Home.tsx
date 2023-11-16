@@ -4,6 +4,7 @@ import { useFollowUser, useGetRecentPosts, useGetUsers, useUnfollowUser } from '
 import { Models } from 'appwrite'
 import Loader from "@/components/shared/Loader";
 import { useUserContext } from '@/context/AuthContext';
+import StorieCard from '@/components/shared/StorieCard';
 
 
 const Home = () => {
@@ -13,7 +14,7 @@ const Home = () => {
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts(user.id)
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
-  
+
 
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
 
@@ -44,6 +45,28 @@ const Home = () => {
   return (
     <div className='flex flex-1'>
       <div className='home-container'>
+
+        <div className="flex p-4 min-h-[100px] max-w-[300px] lg:max-w-[650px] sm:max-w-[400px] xs:max-w-[400px] xxs:max-w-[250px] mx-auto overflow-x-auto relative custom-scrollbar">
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+          <StorieCard />
+        </div>
+
+
         <div className='home-posts'>
           <h2 className='h3-bold md:h2-bold text-left w-full'>
             Home Feed
