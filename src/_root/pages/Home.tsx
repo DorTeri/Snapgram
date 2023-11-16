@@ -71,14 +71,20 @@ const Home = () => {
           <h2 className='h3-bold md:h2-bold text-left w-full'>
             Home Feed
           </h2>
-          {isPostLoading && !posts ? (
+          {isPostLoading ? (
             <Loader />
           ) : (
-            <ul className='flex flex-col flex-1 gap-9 w-full'>
-              {posts?.documents.map((post: Models.Document) => (
-                <PostCard post={post} key={post.$id} />
-              ))}
-            </ul>
+            <>
+              {posts?.documents.length > 0 ? (
+                <ul className='flex flex-col flex-1 gap-9 w-full'>
+                  {posts?.documents.map((post: Models.Document) => (
+                    <PostCard post={post} key={post.$id} />
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-light-1 body-medium">Start following to see posts!</p>
+              )}
+            </>
           )}
         </div>
       </div>
