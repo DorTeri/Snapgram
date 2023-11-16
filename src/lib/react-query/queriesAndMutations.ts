@@ -42,12 +42,13 @@ export const useCreatePost = () => {
     })
 }
 
-export const useGetRecentPosts = () => {
+export const useGetRecentPosts = (userId: string) => {
     return useQuery({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-        queryFn: getRecentPosts,
-    })
-}
+      queryKey: [QUERY_KEYS.GET_RECENT_POSTS, userId],
+      queryFn: () => getRecentPosts(userId),
+    });
+  };
+  
 
 export const useLikePost = () => {
     const queryClient = useQueryClient()

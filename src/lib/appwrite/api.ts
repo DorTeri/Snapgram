@@ -67,7 +67,7 @@ export async function signInAccount(user: { email: string; password: string; }) 
 export async function getCurrentUser() {
     try {
         const currentAccount = await account.get();
-        
+
 
         if (!currentAccount) throw Error;
 
@@ -185,17 +185,39 @@ export async function deleteFile(fileId: string) {
     }
 }
 
-export async function getRecentPosts() {
+export async function getRecentPosts(userId: string) {
+    // Get the list of users you are following
+    const currentUser = await databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        userId
+    );
+
+
+    if (!currentUser || !currentUser.following) throw Error;
+
+    const followingUsers = currentUser.following;
+
+
+    // Use type assertion to inform TypeScript that Query.in is available
     const posts = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.postCollectionId,
-        [Query.orderDesc('$createdAt'), Query.limit(20)]
-    )
+        [
+            Query.orderDesc('$createdAt'),
+            Query.equal('creator', followingUsers),
+            Query.limit(20),
+        ]
+    );
+
+    console.log('posts', posts)
 
     if (!posts) throw Error;
 
-    return posts
+    return posts;
 }
+
+
 
 export async function likePost(postId: string, likesArray: string[]) {
     try {
