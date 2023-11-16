@@ -5,9 +5,21 @@ import { Button } from "../ui/button";
 
 type UserCardProps = {
   user: Models.Document;
+  currentUser: any,
+  handleFollow: any,
+  isLoadingFollow: any
 };
 
-const UserCard = ({ user }: UserCardProps) => {
+
+const UserCard = ({ user, currentUser, handleFollow , isLoadingFollow }: UserCardProps) => {
+
+  const handleFollowClick = (e: React.MouseEvent) => {    
+    e.stopPropagation()
+    e.preventDefault()
+
+    handleFollow(user.$id , currentUser)
+  }
+
   return (
     <Link to={`/profile/${user.$id}`} className="user-card">
       <img
@@ -25,7 +37,10 @@ const UserCard = ({ user }: UserCardProps) => {
         </p>
       </div>
 
-      <Button type="button" size="sm" className="shad-button_primary px-5">
+      <Button type="button"
+        disabled={isLoadingFollow}
+        size="sm" className="shad-button_primary px-5"
+        onClick={(e) => handleFollowClick(e)}>
         Follow
       </Button>
     </Link>

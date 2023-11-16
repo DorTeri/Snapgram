@@ -4,7 +4,7 @@ import {
     useInfiniteQuery,
     useMutation
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -206,6 +206,41 @@ export const useUpdateUser = () => {
         },
     });
 };
+
+export const useFollowUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ userId, targetUserId }: { userId: string, targetUserId: string }) =>
+            followUser(userId, targetUserId),
+        onSuccess: (data) => {
+            // Assuming data contains information about the updated users (similar to your followUser function)
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id], // Replace with the actual key structure
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id], // Replace with the actual key structure
+            });
+        },
+    });
+};
+
+export const useUnfollowUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ userId, targetUserId }: { userId: string, targetUserId: string }) =>
+            unfollowUser(userId, targetUserId),
+        onSuccess: (data) => {
+            // Assuming data contains information about the updated users (similar to your unfollowUser function)
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.user?.$id], // Replace with the actual key structure
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.targetUser?.$id], // Replace with the actual key structure
+            });
+        },
+    });
+};
+
 
 export const useGetUserPosts = (userId?: string) => {
     return useQuery({

@@ -478,6 +478,145 @@ export async function updateUser(user: IUpdateUser) {
     }
 }
 
+export async function followUser(userId: string, targetUserId: string) {
+    try {
+        // Get the current user document
+        const currentUser = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            userId
+        );
+
+        // Get the current 'following' array or initialize it as an empty array
+        const followingArray = currentUser.following || [];
+
+        // Update the 'following' array for the current user by appending the targetUserId
+        const updatedUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            userId,
+            {
+                following: appwriteConfig.appwrite.functions.arrayAppend(targetUserId, followingArray),
+            }
+        );
+
+        // Failed to update
+        if (!updatedUser) {
+            throw new Error('Failed to update following array for the current user.');
+        }
+
+        // Get the target user document
+        const targetUser = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            targetUserId
+        );
+
+        // Get the current 'followers' array or initialize it as an empty array
+        const followersArray = targetUser.followers || [];
+
+        // Update the 'followers' array for the target user by appending the userId
+        const updatedTargetUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            targetUserId,
+            {
+                followers: appwriteConfig.appwrite.functions.arrayAppend(userId, followersArray),
+            }
+        );
+
+        // Failed to update
+        if (!updatedTargetUser) {
+            // Roll back the 'following' array update for the current user
+            await databases.updateDocument(
+                appwriteConfig.databaseId,
+                appwriteConfig.userCollectionId,
+                userId,
+                {
+                    following: appwriteConfig.appwrite.functions.arrayRemove(targetUserId, followingArray),
+                }
+            );
+            throw new Error('Failed to update followers array for the target user.');
+        }
+
+        return { user: updatedUser, targetUser: updatedTargetUser };
+    } catch (error) {
+        console.error('Error in followUser:', error);
+        throw error;
+    }
+}
+
+
+export async function unfollowUser(userId: string, targetUserId: string) {
+    try {
+        // Get the current user document
+        const currentUser = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            userId
+        );
+
+        // Get the current 'following' array or initialize it as an empty array
+        const followingArray = currentUser.following || [];
+
+        // Update the 'following' array for the current user by removing the targetUserId
+        const updatedUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            userId,
+            {
+                following: appwriteConfig.appwrite.functions.arrayRemove(targetUserId, followingArray),
+            }
+        );
+
+        // Failed to update
+        if (!updatedUser) {
+            throw new Error('Failed to update following array for the current user.');
+        }
+
+        // Get the target user document
+        const targetUser = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            targetUserId
+        );
+
+        // Get the current 'followers' array or initialize it as an empty array
+        const followersArray = targetUser.followers || [];
+
+        // Update the 'followers' array for the target user by removing the userId
+        const updatedTargetUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            targetUserId,
+            {
+                followers: appwriteConfig.appwrite.functions.arrayRemove(userId, followersArray),
+            }
+        );
+
+        // Failed to update
+        if (!updatedTargetUser) {
+            // Roll back the 'following' array update for the current user
+            await databases.updateDocument(
+                appwriteConfig.databaseId,
+                appwriteConfig.userCollectionId,
+                userId,
+                {
+                    following: appwriteConfig.appwrite.functions.arrayAppend(targetUserId, followingArray),
+                }
+            );
+            throw new Error('Failed to update followers array for the target user.');
+        }
+
+        return { user: updatedUser, targetUser: updatedTargetUser };
+    } catch (error) {
+        console.error('Error in unfollowUser:', error);
+        throw error; // Re-throw the error to propagate it further if needed
+    }
+}
+
+
+
 export async function getUserPosts(userId?: string) {
     if (!userId) return;
 

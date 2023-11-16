@@ -1,13 +1,24 @@
 import PostCard from '@/components/shared/PostCard'
 import UserCard from '@/components/shared/UserCard'
-import { useGetRecentPosts, useGetUsers } from '@/lib/react-query/queriesAndMutations'
+import { useFollowUser, useGetRecentPosts, useGetUsers } from '@/lib/react-query/queriesAndMutations'
 import { Models } from 'appwrite'
 import Loader from "@/components/shared/Loader";
+import { useUserContext } from '@/context/AuthContext';
 
 const Home = () => {
 
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts()
   const { data: creators, isPending: isUserLoading, isError: isErrorCreators } = useGetUsers(10);
+  const {user} = useUserContext()
+  const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
+
+  const handleFollow = async (targetUserId: string , currentUser: any) => {
+  
+    const data = await followUser({ userId: currentUser.id, targetUserId })
+  
+    console.log('data follow', data);
+  
+  }
 
   if (isErrorPosts || isErrorCreators) {
     return (
@@ -49,7 +60,7 @@ const Home = () => {
           <ul className="grid 2xl:grid-cols-2 gap-6">
             {creators?.documents.map((creator) => (
               <li key={creator?.$id}>
-                <UserCard user={creator} />
+                <UserCard user={creator} currentUser={user} handleFollow={handleFollow} isLoadingFollow={isLoadingFollow}/>
               </li>
             ))}
           </ul>
