@@ -210,9 +210,19 @@ export async function getRecentPosts(userId: string) {
         ]
     );
 
-    console.log('posts', posts)
+    if (!posts) {
+        const allPosts = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+            ]
+        );
 
-    if (!posts) throw Error;
+        return allPosts
+    }
+
+    
 
     return posts;
 }
