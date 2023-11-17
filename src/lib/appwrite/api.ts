@@ -194,7 +194,19 @@ export async function getRecentPosts(userId: string) {
     );
 
 
-    if (!currentUser || !currentUser.following) throw Error;
+    if (!currentUser) throw Error;
+
+    if (currentUser.following.length === 0) {
+        const allPosts = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+            ]
+        );
+
+        return allPosts
+    }
 
     const followingUsers = currentUser.following;
     followingUsers.push(currentUser.$id)
@@ -209,20 +221,6 @@ export async function getRecentPosts(userId: string) {
             Query.limit(20),
         ]
     );
-
-    if (!posts) {
-        const allPosts = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.postCollectionId,
-            [
-                Query.orderDesc('$createdAt'),
-            ]
-        );
-
-        return allPosts
-    }
-
-    
 
     return posts;
 }
