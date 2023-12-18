@@ -278,7 +278,6 @@ export async function getStories(userId: string) {
 
     if (!currentUser) throw Error;
 
-    console.log("twentyFourHoursAgo.toISOString()", twentyFourHoursAgo.toISOString())
 
     if (currentUser.following.length === 0) {
         const allStories = await databases.listDocuments(
@@ -290,8 +289,9 @@ export async function getStories(userId: string) {
             ]
         );
 
+        const orderedStories = sortStories(allStories)
 
-        return allStories
+        return orderedStories
     }
 
     const followingUsers = currentUser.following;
@@ -308,7 +308,13 @@ export async function getStories(userId: string) {
         ]
     );
 
-    const orderedStories = stories.documents.reduce((groupedStories: any, story) => {
+    const orderedStories = sortStories(stories)
+
+    return orderedStories;
+}
+
+function sortStories(stories: any) {
+    const orderedStories = stories.documents.reduce((groupedStories: any, story: any) => {
         const creatorId = story.creator.$id; // Assuming 'creator' is the field containing the creator's ID
 
         // Check if there is already an entry for the creator
@@ -323,7 +329,7 @@ export async function getStories(userId: string) {
         return groupedStories;
     }, {});
 
-    return orderedStories;
+    return orderedStories
 }
 
 

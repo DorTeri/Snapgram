@@ -6,6 +6,7 @@ import Loader from "@/components/shared/Loader";
 import { useUserContext } from '@/context/AuthContext';
 import StoryCard from '@/components/shared/StoryCard';
 import CreateStory from '@/components/shared/CreateStory';
+
 // import StorieCard from '@/components/shared/StorieCard'; development
 
 
@@ -17,7 +18,7 @@ const Home = () => {
   const { data: stories, isPending: isStoriesLoading, isError: isErrorStories } = useGetStories(user.id)
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
-
+  
 
   console.log("stories",stories )
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
@@ -54,15 +55,13 @@ const Home = () => {
           <CreateStory />
         </div>
 
-        <div className="flex p-4 min-h-[100px] max-w-[600px]
+        <div className="flex justify-start w-full p-4 min-h-[100px] max-w-[600px]
            mx-auto overflow-x-auto relative 
           custom-scrollbar border-b-2 border-[#adadad] md:border-0">
           {stories && Object.keys(stories).map((creatorId) => (
-            <StoryCard story={stories[creatorId]} key={creatorId} />
+            <StoryCard story={stories[creatorId]} currUserId={user.id} key={creatorId} />
           ))}
         </div>
-        {/* In development */}
-
 
         <div className='home-posts'>
           {isPostLoading && !posts ? (

@@ -1,10 +1,13 @@
 'use client'
 import { useEffect, useState } from "react"
+import { FaPlus } from "react-icons/fa6";
+
 
 type Props = {
     story: any
+    currUserId: string
 }
-const StoryCard = ({ story }: Props) => {
+const StoryCard = ({ story, currUserId }: Props) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -24,6 +27,10 @@ const StoryCard = ({ story }: Props) => {
         if (isModalOpen) {
             intervalId = setInterval(() => {
                 setCurrentImageIndex((prevIndex) => (prevIndex + 1) % story.length);
+
+                if (currentImageIndex === story.length - 1) {
+                    closeModal();
+                }
             }, 5000);
         }
 
@@ -48,16 +55,33 @@ const StoryCard = ({ story }: Props) => {
         return lines;
     };
 
+    if(!story) return
+
     return (
         <div className="relative min-w-[60px] mr-6 cursor-pointer">
             <div
-                className="rounded-full border-2 border-pink-500 p-1"
+                className="rounded-full relative border-2 border-pink-500 p-1"
                 onClick={() => openModal()}>
                 <img
                     src={story[0].creator.imageUrl}
                     alt="storie"
                     className="rounded-full w-12 h-12"
                 />
+                {
+                    story[0].creator.$id === currUserId &&
+                    <div className="absolute bg-[#2c8ce6] bottom-[-5px] h- w-6 pl-[2.5px] pt-[2.5px] right-[-5px] border-2 border-black rounded-full">
+                        <FaPlus />
+                    </div>
+                }
+            </div>
+            <div
+                className="flex items-center justify-center pt-1">
+                <p className="text-gray-300 text-xs">
+                    {story[0].creator.$id === currUserId ?
+                        'Your story' :
+                        story[0].creator.username
+                    }
+                </p>
             </div>
 
             {isModalOpen && (
