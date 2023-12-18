@@ -266,6 +266,7 @@ export async function getRecentPosts(userId: string) {
 }
 
 export async function getStories(userId: string) {
+    console.log(userId)
     // Get the list of users you are following
     const currentUser = await getCurrentUser()
 

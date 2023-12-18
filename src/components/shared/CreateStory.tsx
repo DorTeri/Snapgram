@@ -1,68 +1,68 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import StoryForm from '../forms/StoryForm'
+import React, { useEffect, useRef, useState } from 'react'
+// import StoryForm from '../forms/StoryForm'
 // import FileUploader from './FileUploader';
-import { FileWithPath, useDropzone } from 'react-dropzone';
+// import { FileWithPath, useDropzone } from 'react-dropzone';
 import { Button } from '../ui/button';
 import { useCreateStory } from '@/lib/react-query/queriesAndMutations';
 import { useUserContext } from '@/context/AuthContext';
 
-type Props = {}
+// type Props = {}
 
-type FileUploaderProps = {
-    canvasContext: any;
-    setFileUrl: React.Dispatch<React.SetStateAction<string>>
-};
+// type FileUploaderProps = {
+//     canvasContext: any;
+//     setFileUrl: React.Dispatch<React.SetStateAction<string>>
+// };
 
-const FileUploader = ({ canvasContext, setFileUrl }: FileUploaderProps) => {
-    const onDrop = (acceptedFiles: FileWithPath[]) => {
-        const image = new Image();
-        image.src = URL.createObjectURL(acceptedFiles[0]);
+// const FileUploader = ({ canvasContext, setFileUrl }: FileUploaderProps) => {
+//     const onDrop = (acceptedFiles: FileWithPath[]) => {
+//         const image = new Image();
+//         image.src = URL.createObjectURL(acceptedFiles[0]);
 
-        image.onload = () => {
-            // Draw the image to cover the entire canvas
-            canvasContext.drawImage(
-                image,
-                0,
-                0,
-                canvasContext.canvas.width,
-                canvasContext.canvas.height
-            );
-        };
+//         image.onload = () => {
+//             // Draw the image to cover the entire canvas
+//             canvasContext.drawImage(
+//                 image,
+//                 0,
+//                 0,
+//                 canvasContext.canvas.width,
+//                 canvasContext.canvas.height
+//             );
+//         };
 
-        setFileUrl(image.src); // Update the fileUrl in the parent component
-    };
+//         setFileUrl(image.src); // Update the fileUrl in the parent component
+//     };
 
-    const { getRootProps, getInputProps } = useDropzone({
-        onDrop,
-        accept: {
-            'image/*': ['.png', '.jpeg', '.jpg', '.svg'],
-        },
-    });
+    // const { getRootProps, getInputProps } = useDropzone({
+    //     onDrop,
+    //     accept: {
+    //         'image/*': ['.png', '.jpeg', '.jpg', '.svg'],
+    //     },
+    // });
 
-    return (
-        <div
-            {...getRootProps()}
-            className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
-        >
-            <input {...getInputProps()} className='cursor-pointer' />
-            <div className='file_uploader-box'>
-                <img
-                    src='/assets/icons/file-upload.svg'
-                    width={96}
-                    height={77}
-                    alt='file-upload'
-                />
+//     return (
+//         <div
+//             {...getRootProps()}
+//             className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
+//         >
+//             <input {...getInputProps()} className='cursor-pointer' />
+//             <div className='file_uploader-box'>
+//                 <img
+//                     src='/assets/icons/file-upload.svg'
+//                     width={96}
+//                     height={77}
+//                     alt='file-upload'
+//                 />
 
-                <h3 className='base-medium text-light-2 mb-2 mt-6'>Drag photo here</h3>
-                <p className='text-light-4 small-regular mb-6'>SVG , PNG , JPG</p>
+//                 <h3 className='base-medium text-light-2 mb-2 mt-6'>Drag photo here</h3>
+//                 <p className='text-light-4 small-regular mb-6'>SVG , PNG , JPG</p>
 
-                <Button className='shad-button_dark_4'>Select from computer</Button>
-            </div>
-        </div>
-    );
-};
+//                 <Button className='shad-button_dark_4'>Select from computer</Button>
+//             </div>
+//         </div>
+//     );
+// };
 
-const CreateStory = (props: Props) => {
+const CreateStory = () => {
     const { user } = useUserContext();
 
     const [canvasContext, setCanvasContext] = useState<any>(null);
@@ -72,7 +72,7 @@ const CreateStory = (props: Props) => {
     const [isEditingText, setIsEditingText] = useState(false);
     const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
     const [isMovingText, setIsMovingText] = useState(false);
-    const { mutateAsync: createStory, isPending: isLoadingCreate } = useCreateStory()
+    const { mutateAsync: createStory} = useCreateStory()
 
 
     useEffect(() => {

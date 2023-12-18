@@ -15,7 +15,7 @@ const Home = () => {
   const { data: creators, isPending: isUserLoading, isError: isErrorCreators } = useGetUsers(10);
   const { user } = useUserContext()
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts(user.id)
-  const { data: stories, isPending: isStoriesLoading, isError: isErrorStories } = useGetStories(user.id)
+  const { data: stories, } = useGetStories(user.id)
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
   
