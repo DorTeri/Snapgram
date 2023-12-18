@@ -1,9 +1,11 @@
 import PostCard from '@/components/shared/PostCard'
 import UserCard from '@/components/shared/UserCard'
-import { useFollowUser, useGetRecentPosts, useGetUsers, useUnfollowUser } from '@/lib/react-query/queriesAndMutations'
+import { useFollowUser, useGetRecentPosts, useGetStories, useGetUsers, useUnfollowUser } from '@/lib/react-query/queriesAndMutations'
 import { Models } from 'appwrite'
 import Loader from "@/components/shared/Loader";
 import { useUserContext } from '@/context/AuthContext';
+import StoryCard from '@/components/shared/StoryCard';
+import CreateStory from '@/components/shared/CreateStory';
 // import StorieCard from '@/components/shared/StorieCard'; development
 
 
@@ -12,10 +14,12 @@ const Home = () => {
   const { data: creators, isPending: isUserLoading, isError: isErrorCreators } = useGetUsers(10);
   const { user } = useUserContext()
   const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts(user.id)
+  const { data: stories, isPending: isStoriesLoading, isError: isErrorStories } = useGetStories(user.id)
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
 
 
+  console.log("stories",stories )
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
 
     if (type === 'follow') {
@@ -46,16 +50,21 @@ const Home = () => {
     <div className='flex flex-1'>
       <div className='home-container'>
 
-        {/* <div className="flex p-4 min-h-[100px] max-w-[300px] lg:max-w-[650px] sm:max-w-[400px] xs:max-w-[400px] xxs:max-w-[290px] mx-auto overflow-x-auto relative custom-scrollbar">
-          <StorieCard /> 
-        </div> */}
+        <div className='hidden'>
+          <CreateStory />
+        </div>
+
+        <div className="flex p-4 min-h-[100px] max-w-[600px]
+           mx-auto overflow-x-auto relative 
+          custom-scrollbar border-b-2 border-[#adadad] md:border-0">
+          {stories && Object.keys(stories).map((creatorId) => (
+            <StoryCard story={stories[creatorId]} key={creatorId} />
+          ))}
+        </div>
         {/* In development */}
 
 
         <div className='home-posts'>
-          <h2 className='h3-bold md:h2-bold text-left w-full'>
-            Home Feed
-          </h2>
           {isPostLoading && !posts ? (
             <Loader />
           ) : (

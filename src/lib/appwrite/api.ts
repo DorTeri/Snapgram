@@ -1,5 +1,5 @@
 import { ID, Query } from "appwrite";
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
+import { INewPost, INewStory, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 
 export async function createUserAccount(user: INewUser) {
@@ -142,6 +142,46 @@ export async function createPost(post: INewPost) {
     }
 }
 
+export async function createStory(story: INewStory) {
+    try {
+        // Upload image to storage
+        console.log("story.file[0]", story.file)
+        const uploadedFile = await uploadFile(story.file[0])
+
+        if (!uploadedFile) throw Error;
+
+        const fileUrl = getFilePreview(uploadedFile.$id)
+
+        if (!fileUrl) {
+            deleteFile(uploadedFile.$id)
+            throw Error;
+        }
+
+        // Save post to database
+
+        const newStory = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.storiesCollectionId,
+            ID.unique(),
+            {
+                creator: story.userId,
+                imageUrl: fileUrl,
+                imageId: uploadedFile.$id,
+            }
+        )
+
+        if (!newStory) {
+            await deleteFile(uploadedFile.$id)
+            throw Error
+        }
+
+        return newStory
+
+    } catch (error) {
+        console.log('createStroy error', error)
+    }
+}
+
 export async function uploadFile(file: File) {
     try {
         const uploadedFile = await storage.createFile(
@@ -225,6 +265,66 @@ export async function getRecentPosts(userId: string) {
     return posts;
 }
 
+export async function getStories(userId: string) {
+    // Get the list of users you are following
+    const currentUser = await getCurrentUser()
+
+
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
+    twentyFourHoursAgo.setMilliseconds(0); // Set milliseconds to 0
+
+
+
+    if (!currentUser) throw Error;
+
+    console.log("twentyFourHoursAgo.toISOString()", twentyFourHoursAgo.toISOString())
+
+    if (currentUser.following.length === 0) {
+        const allStories = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.storiesCollectionId,
+            [
+                Query.orderAsc('$createdAt'),
+                Query.greaterThanEqual("$createdAt", twentyFourHoursAgo.toISOString()),
+            ]
+        );
+
+
+        return allStories
+    }
+
+    const followingUsers = currentUser.following;
+    followingUsers.push(currentUser.$id)
+
+    // Use type assertion to inform TypeScript that Query.in is available
+    const stories = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.storiesCollectionId,
+        [
+            Query.orderAsc('$createdAt'),
+            Query.greaterThanEqual("$createdAt", twentyFourHoursAgo.toISOString()),
+            Query.equal('creator', followingUsers),
+        ]
+    );
+
+    const orderedStories = stories.documents.reduce((groupedStories: any, story) => {
+        const creatorId = story.creator.$id; // Assuming 'creator' is the field containing the creator's ID
+
+        // Check if there is already an entry for the creator
+        if (!groupedStories[creatorId]) {
+            // If not, create a new entry with an array containing the first story
+            groupedStories[creatorId] = [story];
+        } else {
+            // If yes, push the current story to the existing array
+            groupedStories[creatorId].push(story);
+        }
+
+        return groupedStories;
+    }, {});
+
+    return orderedStories;
+}
 
 
 export async function likePost(postId: string, likesArray: string[]) {

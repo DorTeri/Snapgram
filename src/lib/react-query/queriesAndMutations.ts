@@ -4,8 +4,8 @@ import {
     useInfiniteQuery,
     useMutation
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
+import { createPost, createStory, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getStories, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
+import { INewPost, INewStory, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 import { useUserContext } from '@/context/AuthContext'
 
@@ -42,6 +42,20 @@ export const useCreatePost = () => {
         }
     })
 }
+
+export const useCreateStory = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (story: INewStory) => createStory(story),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
+}
+
 
 export const useGetRecentPosts = (userId: string) => {
     return useQuery({
@@ -170,6 +184,14 @@ export const useGetPosts = () => {
         initialPageParam: null
     });
 };
+
+export const useGetStories = (userId: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_INFINITE_STORIES],
+        queryFn: () => getStories(userId)
+    });
+};
+
 
 export const useSearchPosts = (searchTerm: string) => {
     return useQuery({

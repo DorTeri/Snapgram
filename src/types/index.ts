@@ -29,6 +29,11 @@ export type INavLink = {
     location?: string;
     tags?: string;
   };
+
+  export type INewStory = {
+    userId: string;
+    file: File[];
+  };
   
   export type IUpdatePost = {
     postId: string;
