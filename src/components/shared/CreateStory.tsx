@@ -5,6 +5,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button';
 import { useCreateStory } from '@/lib/react-query/queriesAndMutations';
 import { useUserContext } from '@/context/AuthContext';
+import toast from "react-hot-toast";
+import { Link } from 'react-router-dom';
+
 
 // type Props = {}
 
@@ -32,12 +35,12 @@ import { useUserContext } from '@/context/AuthContext';
 //         setFileUrl(image.src); // Update the fileUrl in the parent component
 //     };
 
-    // const { getRootProps, getInputProps } = useDropzone({
-    //     onDrop,
-    //     accept: {
-    //         'image/*': ['.png', '.jpeg', '.jpg', '.svg'],
-    //     },
-    // });
+// const { getRootProps, getInputProps } = useDropzone({
+//     onDrop,
+//     accept: {
+//         'image/*': ['.png', '.jpeg', '.jpg', '.svg'],
+//     },
+// });
 
 //     return (
 //         <div
@@ -72,7 +75,7 @@ const CreateStory = () => {
     const [isEditingText, setIsEditingText] = useState(false);
     const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
     const [isMovingText, setIsMovingText] = useState(false);
-    const { mutateAsync: createStory} = useCreateStory()
+    const { mutateAsync: createStory } = useCreateStory()
 
 
     useEffect(() => {
@@ -105,8 +108,10 @@ const CreateStory = () => {
                 file: [file]
             }
             createStory(story)
+            toast.success("Story uploaded successfully!");
         } catch (err) {
             console.log("createStory err", err)
+            toast.error("Story uploading failed!");
         }
     }
 
@@ -232,6 +237,9 @@ const CreateStory = () => {
             <div>
                 <Button onClick={handleSubmit}>Create Story</Button>
             </div>
+            <Link to={'/'}>
+                Close
+            </Link>
         </div>
     );
 };

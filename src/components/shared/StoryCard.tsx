@@ -1,4 +1,5 @@
 'use client'
+import { getTimeAgo } from "@/lib/utils";
 import { useEffect, useState } from "react"
 import { FaPlus } from "react-icons/fa6";
 
@@ -8,10 +9,12 @@ type Props = {
     currUserId: string
     openCreateStory: () => void
 }
-const StoryCard = ({ story, currUserId , openCreateStory }: Props) => {
+const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    console.log(story[0].$createdAt)
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -92,7 +95,25 @@ const StoryCard = ({ story, currUserId , openCreateStory }: Props) => {
                         <div className="flex justify-center mb-2">{
                             renderProgressLines()}
                         </div>
-                        <img src={story[currentImageIndex].imageUrl} alt="Story" className="w-full h-auto" />
+                        <div className="relative">
+                            <div className="flex gap-2 items-center absolute top-[10px] left-[10px]">
+                                <img src={story[0].creator.imageUrl}
+                                    className="rounded-full w-[30px] h-[30px]" />
+                                <p className="text-white text-md">
+                                    {story[0].creator.$id === currUserId ?
+                                        'Your story' :
+                                        story[0].creator.username
+                                    }
+                                </p>
+                                <p className="text-white text-sm">
+                                    {
+                                        story[currentImageIndex].$createdAt &&
+                                        getTimeAgo(story[currentImageIndex].$createdAt)
+                                    }
+                                </p>
+                            </div>
+                            <img src={story[currentImageIndex].imageUrl} alt="Story" className="w-full h-auto" />
+                        </div>
 
                         <button className="mt-4 p-2 bg-gray-800 text-white rounded"
                             onClick={closeModal}>
