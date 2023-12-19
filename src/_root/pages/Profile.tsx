@@ -57,15 +57,15 @@ const Profile = () => {
   const handleFollow = async () => {
 
     if (!isFollowing) {
+      setIsFollowing(!isFollowing);
       const data = await followUser({ userId: user.id, targetUserId: currentUser.$id })
       console.log('follow', data);
 
     } else {
+      setIsFollowing(!isFollowing);
       const data = await unFollowUser({ userId: user.id, targetUserId: currentUser.$id })
       console.log('unfollow', data);
     }
-
-    setIsFollowing(!isFollowing);
   }
 
   return (

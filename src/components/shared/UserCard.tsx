@@ -27,12 +27,13 @@ const UserCard = ({ user, currentUser, handleFollow, isLoadingFollow, isLoadingU
     e.preventDefault()
 
     if (isFollowing) {
+      setIsFollowing(!isFollowing);
       await handleFollow(user.$id, currentUser, 'unfollow')
     } else {
+      setIsFollowing(!isFollowing);
       await handleFollow(user.$id, currentUser, 'follow')
     }
 
-    setIsFollowing(!isFollowing);
   }
 
   return (

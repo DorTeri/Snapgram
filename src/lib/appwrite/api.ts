@@ -290,6 +290,17 @@ export async function getStories(userId: string) {
             ]
         );
 
+        const idx = allStories.documents.findIndex(story =>
+            story.creator.$id === currentUser.$id)
+
+        if (idx === -1) {
+            const story: any = {
+                creator: currentUser
+            }
+            allStories.documents.unshift(story)
+        }
+
+
         const orderedStories = sortStories(allStories)
 
         return orderedStories
@@ -308,6 +319,20 @@ export async function getStories(userId: string) {
             Query.equal('creator', followingUsers),
         ]
     );
+
+    const idx = stories.documents.findIndex(story =>
+        story.creator.$id === currentUser.$id)
+
+    if (idx === -1) {
+        const story: any = {
+            creator: currentUser
+        }
+        stories.documents.unshift(story)
+    } else {
+        const temp = stories.documents[idx]
+        stories.documents.splice(idx, 1);
+        stories.documents.unshift(temp)
+    }
 
     const orderedStories = sortStories(stories)
 

@@ -6,8 +6,9 @@ import { FaPlus } from "react-icons/fa6";
 type Props = {
     story: any
     currUserId: string
+    openCreateStory: () => void
 }
-const StoryCard = ({ story, currUserId }: Props) => {
+const StoryCard = ({ story, currUserId , openCreateStory }: Props) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -55,7 +56,7 @@ const StoryCard = ({ story, currUserId }: Props) => {
         return lines;
     };
 
-    if(!story) return
+    if (!story) return
 
     return (
         <div className="relative min-w-[60px] mr-6 cursor-pointer">
@@ -69,7 +70,8 @@ const StoryCard = ({ story, currUserId }: Props) => {
                 />
                 {
                     story[0].creator.$id === currUserId &&
-                    <div className="absolute bg-[#2c8ce6] bottom-[-5px] h- w-6 pl-[2.5px] pt-[2.5px] right-[-5px] border-2 border-black rounded-full">
+                    <div className="absolute bg-[#2c8ce6] bottom-[-5px] h- w-6 pl-[2.5px] pt-[2.5px] right-[-5px] border-2 border-black rounded-full"
+                        onClick={openCreateStory}>
                         <FaPlus />
                     </div>
                 }
