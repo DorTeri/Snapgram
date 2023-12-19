@@ -328,6 +328,7 @@ export async function getStories(userId: string) {
             creator: currentUser
         }
         stories.documents.unshift(story)
+        
     } else {
         const temp = stories.documents[idx]
         stories.documents.splice(idx, 1);
