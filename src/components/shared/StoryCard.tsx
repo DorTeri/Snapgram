@@ -134,7 +134,7 @@ const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
 
             {isModalOpen && (
                 <div onClick={closeOnOverlayClick}
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center cursor-default">
+                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center cursor-default z-10">
                     <div className="max-w-md w-full p-4 bg-white rounded-lg">
                         <div className="flex justify-center mb-2">{
                             renderProgressLines()}
