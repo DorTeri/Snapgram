@@ -15,7 +15,7 @@ const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
 
     const canvasRef = useRef<any>();
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [fileUrl, setFileUrl] = useState('/assets/images/default_story1.jpg');
+    const [fileUrl, setFileUrl] = useState('/assets/images/default_story.jpg');
     const [text, setText] = useState('');
     const [textColor, setTextColor] = useState('#ffffff')
     const { mutateAsync: createStory } = useCreateStory()
@@ -65,7 +65,17 @@ const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
     const CustomImage = () => {
         const [image] = useImage(fileUrl);
 
-        return <Image image={image} />;
+        if (!image) return null;
+
+        const scale = Math.min(400 / image.width, 400 / image.height);
+
+        // Calculate the scaled dimensions and center position for the image
+        const scaledWidth = image.width * scale;
+        const scaledHeight = image.height * scale;
+        const centerX = (400 - scaledWidth) / 2;
+        const centerY = (400 - scaledHeight) / 2;
+
+        return <Image image={image} x={centerX} y={centerY} width={scaledWidth} height={scaledHeight} />;
     };
 
     const handleCloseCreateStory = () => {
