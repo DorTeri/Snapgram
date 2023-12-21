@@ -15,7 +15,7 @@ import { useUserContext } from "@/context/AuthContext"
 
 const SigninForm = () => {
   const { toast } = useToast()
-  const {checkAuthUser , isLoading: isUserLoading} = useUserContext()
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
   const navigate = useNavigate()
 
   const { mutateAsync: signInAccount } = useSignInAccount()
@@ -27,6 +27,17 @@ const SigninForm = () => {
       password: ''
     },
   })
+
+  const handleGuest = () => {
+    const guestDefaultValues = {
+      email: 'dani@gmail.com',
+      password: '12345678',
+    };
+
+    form.reset(guestDefaultValues);
+
+    form.handleSubmit(onSubmit)()
+  }
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SigninValidation>) {
@@ -41,14 +52,14 @@ const SigninForm = () => {
     }
 
     const isLoggedIn = await checkAuthUser()
-    
 
-    if(isLoggedIn) {
+
+    if (isLoggedIn) {
       form.reset();
 
       navigate('/')
     } else {
-      toast({title: 'Sign in failed. Please try again.'})
+      toast({ title: 'Sign in failed. Please try again.' })
     }
   }
 
@@ -89,13 +100,22 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="shad-button_primary">
+          <Button type="submit" className="shad-button_primary hover:opacity-75 transition-all duration-300">
             {isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
             ) : (
               "Sign in"
+            )}
+          </Button>
+          <Button onClick={handleGuest} className="shad-button_primary hover:opacity-75 transition-all duration-300">
+            {isUserLoading ? (
+              <div className="flex-center gap-2">
+                <Loader /> Loading...
+              </div>
+            ) : (
+              "Guest mode"
             )}
           </Button>
           <p className="text-small-regular text-light-2 text-center mt-2">
