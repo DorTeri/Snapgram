@@ -380,6 +380,26 @@ export async function likePost(postId: string, likesArray: string[]) {
     }
 }
 
+export async function commentPost(postId: string, commentsArray: string[]) {
+    try {
+        const updatedPost = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            postId,
+            {
+                comments: commentsArray
+            }
+        )
+
+        if (!updatedPost) throw Error
+
+        return updatedPost
+
+    } catch (error) {
+        console.log('commentPost error', error)
+    }
+}
+
 export async function savePost(postId: string, userid: string) {
     try {
         const updatedPost = await databases.createDocument(

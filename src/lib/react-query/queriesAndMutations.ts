@@ -4,7 +4,7 @@ import {
     useInfiniteQuery,
     useMutation
 } from '@tanstack/react-query'
-import { createPost, createStory, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getStories, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
+import { commentPost, createPost, createStory, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getStories, getUserById, getUserPosts, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, unfollowUser, updatePost, updateUser } from '../appwrite/api'
 import { INewPost, INewStory, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 import { useUserContext } from '@/context/AuthContext'
@@ -71,6 +71,29 @@ export const useLikePost = () => {
     return useMutation({
         mutationFn: ({ postId, likesArray }: { postId: string; likesArray: string[] }) =>
             likePost(postId, likesArray),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+export const useCommentPost = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ postId, commentsArray }: { postId: string; commentsArray: any[] }) =>
+            commentPost(postId, commentsArray),
         onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]

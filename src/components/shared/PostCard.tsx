@@ -5,9 +5,10 @@ import { Link } from "react-router-dom"
 import PostStats from "./PostStats"
 
 type PostCardProps = {
-    post: Models.Document
+    post: Models.Document;
+    setIsCommentsOpen: (a:boolean) => void
 }
-const PostCard = ({ post }: PostCardProps) => {
+const PostCard = ({ post, setIsCommentsOpen }: PostCardProps) => {
 
     const { user } = useUserContext()
 
@@ -67,7 +68,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 />
             </Link>
 
-            <PostStats post={post} userId={user.id} />
+            <PostStats post={post} userId={user.id} setIsCommentsOpen={setIsCommentsOpen} />
         </div>
     )
 }

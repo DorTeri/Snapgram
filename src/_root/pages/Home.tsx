@@ -21,6 +21,9 @@ const Home = () => {
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false)
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+
+  console.log(isCommentsOpen)
 
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
 
@@ -65,7 +68,7 @@ const Home = () => {
 
         <div className="flex justify-start w-full p-4 min-h-[100px] max-w-[600px]
            mx-auto overflow-x-auto relative 
-          custom-scrollbar border-b-2 border-[#adadad] md:border-0">
+          custom-scrollbar">
           {stories && Object.keys(stories).map((creatorId) => (
             <StoryCard openCreateStory={openCreateStory} story={stories[creatorId]} currUserId={user.id} key={creatorId} />
           ))}
@@ -77,12 +80,11 @@ const Home = () => {
           ) : (
             <ul className='flex flex-col flex-1 gap-9 w-full'>
               {posts?.documents.map((post: Models.Document) => (
-                <PostCard post={post} key={post.$id} />
+                <PostCard post={post} key={post.$id} setIsCommentsOpen={setIsCommentsOpen} />
               ))}
             </ul>
           )}
         </div>
-
       </div>
 
       <div className="home-creators">
