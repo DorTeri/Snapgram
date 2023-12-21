@@ -6,9 +6,8 @@ import PostStats from "./PostStats"
 
 type PostCardProps = {
     post: Models.Document;
-    setIsCommentsOpen: (a:boolean) => void
 }
-const PostCard = ({ post, setIsCommentsOpen }: PostCardProps) => {
+const PostCard = ({ post}: PostCardProps) => {
 
     const { user } = useUserContext()
 
@@ -68,7 +67,7 @@ const PostCard = ({ post, setIsCommentsOpen }: PostCardProps) => {
                 />
             </Link>
 
-            <PostStats post={post} userId={user.id} setIsCommentsOpen={setIsCommentsOpen} />
+            <PostStats post={post} userId={user.id}/>
         </div>
     )
 }

@@ -21,9 +21,7 @@ const Home = () => {
   const { mutateAsync: followUser, isPending: isLoadingFollow } = useFollowUser()
   const { mutateAsync: unFollowUser, isPending: isLoadingUnfollow } = useUnfollowUser()
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false)
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
 
-  console.log(isCommentsOpen)
 
   const handleFollow = async (targetUserId: string, currentUser: any, type: string) => {
 
@@ -80,7 +78,7 @@ const Home = () => {
           ) : (
             <ul className='flex flex-col flex-1 gap-9 w-full'>
               {posts?.documents.map((post: Models.Document) => (
-                <PostCard post={post} key={post.$id} setIsCommentsOpen={setIsCommentsOpen} />
+                <PostCard post={post} key={post.$id} />
               ))}
             </ul>
           )}

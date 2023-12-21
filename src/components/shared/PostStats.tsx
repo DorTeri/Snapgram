@@ -8,10 +8,9 @@ import React, { useState, useEffect } from "react";
 type PostStatsProps = {
     post?: Models.Document;
     userId: string;
-    setIsCommentsOpen: (a: boolean) => void
 }
 
-const PostStats = ({ post, userId, setIsCommentsOpen }: PostStatsProps) => {
+const PostStats = ({ post, userId }: PostStatsProps) => {
 
     const likesList = post?.likes.map((user: Models.Document) => user.$id)
 
@@ -74,7 +73,7 @@ const PostStats = ({ post, userId, setIsCommentsOpen }: PostStatsProps) => {
                     className="cursor-pointer"
                 />
                 <p className="small-medium lg:base-medium">{likes.length}</p>
-                <div onClick={() => setIsCommentsOpen(true)}
+                <div
                     className="flex cursor-pointer text-lg ml-2 text-primary-500 justify-center items-center">
                     <FaRegComment />
                 </div>
