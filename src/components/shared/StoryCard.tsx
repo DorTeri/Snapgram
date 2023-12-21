@@ -2,6 +2,9 @@
 import { getTimeAgo } from "@/lib/utils";
 import { useEffect, useState } from "react"
 import { FaPlus } from "react-icons/fa6";
+import { IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
+
 
 
 type Props = {
@@ -24,8 +27,15 @@ const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
         setIsModalOpen(false);
     };
 
+    const closeOnOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            closeModal();
+        }
+    };
+
+    let intervalId: NodeJS.Timeout;
+
     useEffect(() => {
-        let intervalId: NodeJS.Timeout;
 
         if (isModalOpen) {
             intervalId = setInterval(() => {
@@ -64,6 +74,34 @@ const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
         return lines;
     };
 
+    const startInterval = () => {
+        intervalId = setInterval(() => {
+            handleArrowClick('right');
+        }, 5000);
+    };
+
+    const handleArrowClick = (direction: 'left' | 'right') => {
+        clearInterval(intervalId);
+
+        setCurrentImageIndex((prevIndex) => {
+            let nextIndex;
+
+            if (direction === 'right') {
+                nextIndex = (prevIndex + 1) % story.length;
+            } else {
+                nextIndex = (prevIndex - 1 + story.length) % story.length;
+            }
+
+            if (nextIndex === 0) {
+                closeModal();
+            } else {
+                startInterval()
+            }
+
+            return nextIndex;
+        });
+    };
+
     if (!story) return
 
     return (
@@ -95,7 +133,8 @@ const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
             </div>
 
             {isModalOpen && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center">
+                <div onClick={closeOnOverlayClick}
+                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center cursor-default">
                     <div className="max-w-md w-full p-4 bg-white rounded-lg">
                         <div className="flex justify-center mb-2">{
                             renderProgressLines()}
@@ -117,13 +156,18 @@ const StoryCard = ({ story, currUserId, openCreateStory }: Props) => {
                                     }
                                 </p>
                             </div>
+                            <div className="absolute right-2 top-[180px] text-4xl cursor-pointer hover:opacity-75" onClick={() => handleArrowClick('right')}>
+                                <IoIosArrowForward />
+                            </div>
+                            <div className="absolute left-2 top-[180px] text-4xl cursor-pointer hover:opacity-75" onClick={() => handleArrowClick('left')}>
+                                <IoIosArrowBack />
+                            </div>
+                            <button className="absolute top-[-10px] right-2 mt-4 p-2 text-white rounded"
+                                onClick={closeModal}>
+                                X
+                            </button>
                             <img src={story[currentImageIndex].imageUrl} alt="Story" className="w-full h-auto" />
                         </div>
-
-                        <button className="mt-4 p-2 bg-gray-800 text-white rounded"
-                            onClick={closeModal}>
-                            Close
-                        </button>
                     </div>
                 </div>
             )}
