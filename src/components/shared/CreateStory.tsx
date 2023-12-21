@@ -67,7 +67,11 @@ const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
 
         if (!image) return null;
 
-        const scale = Math.min(400 / image.width, 400 / image.height);
+        const scaleX = 400 / image.width;
+        const scaleY = 400 / image.height;
+
+        // Choose the scaling factor based on the aspect ratio
+        const scale = image.width > image.height ? scaleX : scaleY;
 
         // Calculate the scaled dimensions and center position for the image
         const scaledWidth = image.width * scale;
