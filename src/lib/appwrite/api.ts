@@ -273,7 +273,7 @@ export async function getStories(userId: string) {
 
     const twentyFourHoursAgo = new Date();
     twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
-    twentyFourHoursAgo.setMilliseconds(0); // Set milliseconds to 0
+    twentyFourHoursAgo.setMilliseconds(0);
 
 
 

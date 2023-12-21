@@ -32,10 +32,10 @@ const Home = () => {
       const data = await unFollowUser({ userId: currentUser.id, targetUserId })
       console.log('unfollow', data);
     }
-
   }
 
-  const openCreateStory = () => {
+  const openCreateStory = (e: any) => {
+    e.stopPropagation()
     setIsCreateStoryOpen(true)
   }
 
@@ -56,9 +56,12 @@ const Home = () => {
     <div className='flex flex-1'>
       <div className='home-container'>
 
-        <div className={`${!isCreateStoryOpen && 'hidden'}`}>
-          <CreateStory />
-        </div>
+        {
+          isCreateStoryOpen && (
+            <CreateStory setIsCreateStoryOpen={setIsCreateStoryOpen} />
+          )
+        }
+
 
         <div className="flex justify-start w-full p-4 min-h-[100px] max-w-[600px]
            mx-auto overflow-x-auto relative 

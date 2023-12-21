@@ -6,101 +6,53 @@ import { Button } from '../ui/button';
 import { useCreateStory } from '@/lib/react-query/queriesAndMutations';
 import { useUserContext } from '@/context/AuthContext';
 import toast from "react-hot-toast";
-import { Link } from 'react-router-dom';
+import { Stage, Layer, Text, Image } from 'react-konva';
+import useImage from 'use-image';
 
+interface CreateStoryProps {
+    setIsCreateStoryOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-// type Props = {}
-
-// type FileUploaderProps = {
-//     canvasContext: any;
-//     setFileUrl: React.Dispatch<React.SetStateAction<string>>
-// };
-
-// const FileUploader = ({ canvasContext, setFileUrl }: FileUploaderProps) => {
-//     const onDrop = (acceptedFiles: FileWithPath[]) => {
-//         const image = new Image();
-//         image.src = URL.createObjectURL(acceptedFiles[0]);
-
-//         image.onload = () => {
-//             // Draw the image to cover the entire canvas
-//             canvasContext.drawImage(
-//                 image,
-//                 0,
-//                 0,
-//                 canvasContext.canvas.width,
-//                 canvasContext.canvas.height
-//             );
-//         };
-
-//         setFileUrl(image.src); // Update the fileUrl in the parent component
-//     };
-
-// const { getRootProps, getInputProps } = useDropzone({
-//     onDrop,
-//     accept: {
-//         'image/*': ['.png', '.jpeg', '.jpg', '.svg'],
-//     },
-// });
-
-//     return (
-//         <div
-//             {...getRootProps()}
-//             className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
-//         >
-//             <input {...getInputProps()} className='cursor-pointer' />
-//             <div className='file_uploader-box'>
-//                 <img
-//                     src='/assets/icons/file-upload.svg'
-//                     width={96}
-//                     height={77}
-//                     alt='file-upload'
-//                 />
-
-//                 <h3 className='base-medium text-light-2 mb-2 mt-6'>Drag photo here</h3>
-//                 <p className='text-light-4 small-regular mb-6'>SVG , PNG , JPG</p>
-
-//                 <Button className='shad-button_dark_4'>Select from computer</Button>
-//             </div>
-//         </div>
-//     );
-// };
-
-const CreateStory = () => {
+const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
     const { user } = useUserContext();
 
-    const [canvasContext, setCanvasContext] = useState<any>(null);
     const canvasRef = useRef<any>();
-    const [fileUrl, setFileUrl] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [fileUrl, setFileUrl] = useState('/assets/images/default_story1.jpg');
     const [text, setText] = useState('');
-    const [isEditingText, setIsEditingText] = useState(false);
-    const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
-    const [isMovingText, setIsMovingText] = useState(false);
+    const [textColor, setTextColor] = useState('#ffffff')
     const { mutateAsync: createStory } = useCreateStory()
-
+    const [isDragging, setIsDragging] = useState(false)
+    const [x, setX] = useState(50)
+    const [y, setY] = useState(50)
+    const [imageUrl, setImageUrl] = useState<any>(null)
+    const [fontSize, setFontSize] = useState(30)
 
     useEffect(() => {
-        const windowWidth = 400;
-        const windowHeight = 400;
 
-        const canvas = canvasRef.current;
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
 
-        canvas.width = windowWidth;
-        canvas.height = windowHeight;
+        loadImage()
+    }, [fileUrl])
 
-        const context = canvas.getContext('2d');
-        setCanvasContext(context);
-    }, [canvasRef]);
+    const loadImage = () => {
+        setImageUrl(new window.Image());
+        setImageUrl((prevState: any) => {
+            return {
+                ...prevState,
+                src: fileUrl || '/assets/images/profile.png',
+            };
+        });
+    };
 
     const handleSubmit = async () => {
-        const canvasDataURL = canvasRef.current.toDataURL('image/png');
-        const res = await fetch(canvasDataURL)
-        const blob = await res.blob()
+        const uri = canvasRef.current.toDataURL();
 
-        // Create File from Blob
+        const blob = await fetch(uri).then((res) => res.blob());
+
         const file = new File([blob], 'canvas_image.png', { type: 'image/png' });
-
-        // Update the state
-
 
         try {
             const story = {
@@ -113,133 +65,101 @@ const CreateStory = () => {
             console.log("createStory err", err)
             toast.error("Story uploading failed!");
         }
+        setIsCreateStoryOpen(false)
     }
 
-    const handleCanvasClick = () => {
-        if (fileUrl) return
-        const inputElement = document.getElementById('file-input');
-        if (!isEditingText) {
-            setIsEditingText(true);
-        }
-        if (inputElement) {
-            inputElement.click();
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            setFileUrl(URL.createObjectURL(file));
         }
     };
 
-    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setText(e.target.value);
+    const CustomImage = () => {
+        const [image] = useImage(fileUrl);
+
+        return <Image image={image} />;
     };
 
-    const handleAddText = () => {
-        // Draw the text on the canvas
-        canvasContext.font = '30px Arial';
-        canvasContext.fillStyle = 'white';
-        canvasContext.fillText(text, textPosition.x, textPosition.y);
-
-        // Reset the text state and flag
-        setIsEditingText(false);
-        setTextPosition({ x: 50, y: 50 });
-    };
-
-    const isLineClicked = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        const canvasRect = canvasRef.current.getBoundingClientRect();
-
-        const canvasX = e.clientX - canvasRect.left;
-        const canvasY = e.clientY - canvasRect.top;
-        const font = '30px Arial';
-        canvasContext.font = font;
-        const width = canvasContext.measureText(text).width
-        const height = parseInt(canvasContext.font.match(/\d+/), 10)
-        if (canvasX > textPosition.x - width / 2 && canvasX < textPosition.x + width / 2 &&
-            canvasY > textPosition.y - height / 2 && canvasY < textPosition.y + height / 2) {
-            setIsMovingText(true)
-            console.log("inside")
-        }
+    const handleCloseCreateStory = () => {
+        setIsCreateStoryOpen(false)
     }
 
-    const handleTextMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!isMovingText) return
-
-        const canvasRect = canvasRef.current.getBoundingClientRect();
-
-        const canvasX = e.clientX - canvasRect.left;
-        const canvasY = e.clientY - canvasRect.top;
-
-        if (fileUrl) {
-            const image = new Image();
-            image.src = fileUrl;
-            canvasContext.drawImage(
-                image,
-                0,
-                0,
-                canvasContext.canvas.width,
-                canvasContext.canvas.height
-            );
-        }
-
-        textPosition.x = canvasX
-        textPosition.y = canvasY
-
-        canvasContext.font = '30px Arial';
-        canvasContext.fillStyle = 'white';
-        canvasContext.fillText(text, textPosition.x, textPosition.y);
+    const handleFontSize = (size: number) => {
+        setFontSize(prevState => {
+            return prevState + size
+        })
     }
 
 
     return (
-        <div className='p-10 absolute left-0 top-0 w-full h-full z-10 bg-dark-1'>
-            {/* <StoryForm action='Create'/> */}
-            <canvas
-                ref={canvasRef}
-                style={{ border: '1px solid #ccc' }}
-                onClick={handleCanvasClick}
-                onMouseDown={isLineClicked}
-                onMouseMove={handleTextMove}
-                onMouseUp={() => setIsMovingText(false)}
-            ></canvas>
-
-            <div>
-                <input
-                    type='text'
-                    value={text}
-                    onChange={handleTextChange}
-                    placeholder='Enter text'
-                    className='text-black'
-                />
-                <Button onClick={handleAddText}>Add Text</Button>
+        <div className='p-10 absolute left-0 top-0 w-full h-screen z-10 bg-dark-1'>
+            <div className='text-center mb-10 text-xl'>
+                <h1>Story Upload</h1>
             </div>
-            <input
-                id='file-input'
-                type='file'
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                    if (e.target.files) {
-                        // Handle the file selection when an image is dropped onto the canvas
-                        const imageFile = e.target.files[0];
-                        const image = new Image();
-                        image.src = URL.createObjectURL(imageFile);
+            <div className='w-full'>
+                <div className='relative w-[400px] mx-auto mb-10'>
+                    <Stage width={400} height={400} ref={canvasRef}>
+                        <Layer>
+                            {fileUrl && (
+                                <CustomImage />
+                            )}
+                            <Text
+                                text={text}
+                                x={x}
+                                y={y}
+                                draggable
+                                fontSize={fontSize}
+                                fill={isDragging ? 'green' : textColor}
+                                onDragStart={() => setIsDragging(true)}
+                                onDragEnd={(e) => {
+                                    setIsDragging(false)
+                                    setX(e.target.x())
+                                    setY(e.target.y())
+                                }}
+                            />
+                        </Layer>
+                    </Stage>
+                    <div className='flex gap-3 absolute top-2 left-2'>
+                        <div className='bg-dark-1 rounded-md opacity-70 hover:opacity-100 transition-all duration-300 h-[30px] flex items-center'>
+                            <Button onClick={() => handleFontSize(1)} className='text-xs px-2'>A+</Button>
+                        </div>
+                        <div className='bg-dark-1 rounded-md opacity-70 hover:opacity-100 transition-all duration-300 h-[30px] flex items-center'>
+                            <Button onClick={() => handleFontSize(-1)} className='text-xs px-2'>A-</Button>
+                        </div>
+                        <input onChange={(e) => setTextColor(e.target.value)} className='bg-transparent h-[30px] w-[40px]' type="color" id="hs-color-input"
+                            value={textColor} title="Choose your color"></input>
+                    </div>
+                    <Button onClick={handleCloseCreateStory} className='text-white bg-black opacity-70 hover:opacity-100 transition-all duration-300 absolute bottom-2 left-2'>
+                        Discard
+                    </Button>
+                    <Button onClick={handleSubmit} className='text-white bg-black opacity-70 hover:opacity-100 transition-all duration-300 absolute bottom-2 right-2'>Upload Story</Button>
+                </div>
+                <div className='relative w-[400px] mx-auto'>
+                    <input ref={fileInputRef} className='hidden' onChange={(e) => handleImageChange(e)} type='file' id='fiile_input' />
+                    <input
+                        onChange={(e) => setText(e.target.value)}
+                        value={text}
+                        className={`peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal
+                             outline outline-0 focus:outline-0 disabled:bg-blue-gray-50
+                             disabled:border-0 transition-all placeholder-shown:border
+                              placeholder-shown:border-blue-gray-200 
+                              placeholder-shown:border-t-blue-gray-200 border 
+                              focus:border-2 focus:border-t-transparent 
+                              ${text ? 'border-t-transparent' : ''}
+                              text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200
+                               focus:border-purple-500`}
+                        placeholder="" /><label
+                            className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-blue-gray-400 peer-focus:text-purple-500 before:border-blue-gray-200 peer-focus:before:!border-purple-500 after:border-blue-gray-200 peer-focus:after:!border-purple-500">
+                        Your story text
+                    </label>
+                </div>
 
-                        image.onload = () => {
-                            // Draw the image to cover the entire canvas
-                            canvasContext.drawImage(
-                                image,
-                                0,
-                                0,
-                                canvasContext.canvas.width,
-                                canvasContext.canvas.height
-                            );
-                        };
 
-                        setFileUrl(image.src); // Update the fileUrl in the parent component
-                    }
-                }}
-            />
-            <div>
-                <Button onClick={handleSubmit}>Create Story</Button>
+                {/* <input type='text' className='text-black' placeholder='write here' onChange={(e) => setText(e.target.value)} /> */}
             </div>
-            <Link to={'/'}>
-                Close
-            </Link>
+
         </div>
     );
 };
