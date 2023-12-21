@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-// import StoryForm from '../forms/StoryForm'
-// import FileUploader from './FileUploader';
-// import { FileWithPath, useDropzone } from 'react-dropzone';
 import { Button } from '../ui/button';
 import { useCreateStory } from '@/lib/react-query/queriesAndMutations';
 import { useUserContext } from '@/context/AuthContext';
@@ -25,7 +22,6 @@ const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
     const [isDragging, setIsDragging] = useState(false)
     const [x, setX] = useState(50)
     const [y, setY] = useState(50)
-    const [imageUrl, setImageUrl] = useState<any>(null)
     const [fontSize, setFontSize] = useState(30)
 
     useEffect(() => {
@@ -34,18 +30,8 @@ const CreateStory = ({ setIsCreateStoryOpen }: CreateStoryProps) => {
             fileInputRef.current.click();
         }
 
-        loadImage()
     }, [fileUrl])
 
-    const loadImage = () => {
-        setImageUrl(new window.Image());
-        setImageUrl((prevState: any) => {
-            return {
-                ...prevState,
-                src: fileUrl || '/assets/images/profile.png',
-            };
-        });
-    };
 
     const handleSubmit = async () => {
         const uri = canvasRef.current.toDataURL();
