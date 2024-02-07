@@ -3,18 +3,21 @@ import { multiFormatDateString } from "@/lib/utils"
 import { Models } from "appwrite"
 import { Link } from "react-router-dom"
 import PostStats from "./PostStats"
+import CommentsModal from "./CommentsModal"
+import { useState } from "react"
 
 type PostCardProps = {
     post: Models.Document;
 }
-const PostCard = ({ post}: PostCardProps) => {
+const PostCard = ({ post }: PostCardProps) => {
 
     const { user } = useUserContext()
+    const [isCommentsOpen, setIsCommentsOpen] = useState(false)
 
     if (!post.creator) return
 
     return (
-        <div className="post-card">
+        <div className="post-card relative">
             <div className="flex-between">
                 <div className="flex items-center gap-3">
                     <Link to={`/profile/${post.creator.$id}`}>
@@ -67,7 +70,10 @@ const PostCard = ({ post}: PostCardProps) => {
                 />
             </Link>
 
-            <PostStats post={post} userId={user.id}/>
+            <PostStats post={post} userId={user.id} toggleCommentsModal={setIsCommentsOpen} />
+            {isCommentsOpen && (
+                <CommentsModal user={user} isCommentsOpen={isCommentsOpen} toggleCommentsModal={setIsCommentsOpen} post={post}/>
+            )}
         </div>
     )
 }

@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
 import PostStats from "@/components/shared/PostStats";
 import GridPostList from "@/components/shared/GridPostList";
+import { useState } from "react";
+import CommentsModal from "@/components/shared/CommentsModal";
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useUserContext();
 
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const { data: post, isLoading } = useGetPostById(id || '');
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
     post?.creator.$id
@@ -47,7 +50,7 @@ const PostDetails = () => {
       {isLoading || !post ? (
         <Loader />
       ) : (
-        <div className="post_details-card">
+        <div className="relative post_details-card">
           <img
             src={post?.imageUrl}
             alt="creator"
@@ -98,9 +101,8 @@ const PostDetails = () => {
                 <Button
                   onClick={handleDeletePost}
                   variant="ghost"
-                  className={`ost_details-delete_btn ${
-                    user.id !== post?.creator.$id && "hidden"
-                  }`}>
+                  className={`ost_details-delete_btn ${user.id !== post?.creator.$id && "hidden"
+                    }`}>
                   <img
                     src={"/assets/icons/delete.svg"}
                     alt="delete"
@@ -127,9 +129,12 @@ const PostDetails = () => {
             </div>
 
             <div className="w-full">
-              <PostStats post={post} userId={user.id} />
+              <PostStats post={post} userId={user.id} toggleCommentsModal={setIsCommentsOpen} />
             </div>
           </div>
+          {isCommentsOpen && (
+                <CommentsModal user={user} isCommentsOpen={isCommentsOpen} toggleCommentsModal={setIsCommentsOpen} post={post} />
+              )}
         </div>
       )}
 

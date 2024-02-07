@@ -328,7 +328,7 @@ export async function getStories(userId: string) {
             creator: currentUser
         }
         stories.documents.unshift(story)
-        
+
     } else {
         const temp = stories.documents[idx]
         stories.documents.splice(idx, 1);
@@ -380,23 +380,22 @@ export async function likePost(postId: string, likesArray: string[]) {
     }
 }
 
-export async function commentPost(postId: string, commentsArray: string[]) {
+export async function commentPost(commentData: any) {
     try {
-        const updatedPost = await databases.updateDocument(
+        const comment = await databases.createDocument(
             appwriteConfig.databaseId,
-            appwriteConfig.postCollectionId,
-            postId,
-            {
-                comments: commentsArray
-            }
-        )
+            appwriteConfig.commentsCollectionId,
+            ID.unique(),
+            commentData
+        );
 
-        if (!updatedPost) throw Error
+        if (!comment) throw Error
 
-        return updatedPost
+        return comment
 
     } catch (error) {
         console.log('commentPost error', error)
+        throw Error
     }
 }
 

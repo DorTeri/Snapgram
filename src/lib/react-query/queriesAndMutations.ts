@@ -92,8 +92,8 @@ export const useCommentPost = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ postId, commentsArray }: { postId: string; commentsArray: any[] }) =>
-            commentPost(postId, commentsArray),
+        mutationFn: ({ commentData }: { commentData: any }) =>
+            commentPost(commentData),
         onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]

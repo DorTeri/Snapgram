@@ -8,9 +8,10 @@ import React, { useState, useEffect } from "react";
 type PostStatsProps = {
     post?: Models.Document;
     userId: string;
+    toggleCommentsModal?: any;
 }
 
-const PostStats = ({ post, userId }: PostStatsProps) => {
+const PostStats = ({ post, userId , toggleCommentsModal }: PostStatsProps) => {
 
     const likesList = post?.likes.map((user: Models.Document) => user.$id)
 
@@ -47,6 +48,10 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         likePost({ postId: post?.$id || '', likesArray: newLikes })
     }
 
+    const handleCommentClick = () => {
+        toggleCommentsModal(true)
+    }
+
     const handleSavePost = (e: React.MouseEvent) => {
         e.stopPropagation();
 
@@ -74,10 +79,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                 />
                 <p className="small-medium lg:base-medium">{likes.length}</p>
                 <div
+                onClick={handleCommentClick}
                     className="flex cursor-pointer text-lg ml-2 text-primary-500 justify-center items-center">
                     <FaRegComment />
                 </div>
-                <p className="small-medium lg:base-medium">5</p>
+                <p className="small-medium lg:base-medium">{post?.comments?.length}</p>
             </div>
             <div className="flex gap-2">
                 {isSavingPost || isDeletingSaved ? <Loader /> :
