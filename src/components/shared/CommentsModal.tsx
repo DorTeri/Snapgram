@@ -44,16 +44,18 @@ const CommentsModal = ({ toggleCommentsModal, post, user }: Props) => {
 
     return (
         <div className='flex flex-col gap-5 p-5 absolute bottom-0 left-0 z-50
-         w-[100%] h-[60%] bg-[#2e2e2e] rounded-t-md transition-transform duration-300'>
+         w-[100%] h-[70%] bg-dark-4 rounded-t-md transition-transform duration-300'>
             <h1 className='text-center border-b-2 h-10'>Comments</h1>
             <button className="absolute top-[-5px] right-2 mt-4 p-2 text-white rounded"
                 onClick={closeModal}>
                 X
             </button>
             <div className="overflow-y-auto flex-grow">
-                {post.comments.map((comment: { comment: any }) => (
-                    <CommentCard comment={comment} />
-                ))}
+                {post.comments[0] ? (
+                    post.comments.map((comment: { comment: any }) => (
+                        <CommentCard comment={comment} />
+                    ))
+                ) : 'Be the first to comment'}
             </div>
             <div className="comment-input flex items-center gap-5">
                 <Link to={`/profile/${post.creator.$id}`}>
